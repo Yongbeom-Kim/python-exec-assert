@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "python-exec-assert"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
-  { name="Example Author", email="author@example.com" },
+  { name="Kim Yongbeom", email="yongbeom.sg@gmail.com" },
 ]
-description = "A small example package"
+description = "A package to execute a command and make assertions about the result."
 readme = "README.md"
 requires-python = ">=3.9"
 classifiers = [
@@ -18,5 +18,18 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/pypa/sampleproject"
-Issues = "https://github.com/pypa/sampleproject/issues"
+Homepage = "https://github.com/Yongbeom-Kim/python-exec-assert"
+Issues = "https://github.com/Yongbeom-Kim/python-exec-assert/issues"
+
+
+[tool.mypy]
+warn_return_any = true
+warn_unused_configs = true
+warn_unused_ignores = true
+
+disallow_untyped_defs = true
+disallow_any_unimported = true
+
+check_untyped_defs = true
+no_implicit_optional = true
+show_error_codes = true
