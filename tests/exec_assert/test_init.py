@@ -24,7 +24,7 @@ def test_custom_condition_fail() -> None:
     assert result.failed_assertions[0].description() == 'test'
 
 def test_has_substring_command() -> None:
-    result = Command('echo "Hello, World!"') \
+    result = Command('echo "Hello, World!" && echo "Goodbye, World!"') \
             .check_for(RuntimeLogCondition.HasSubstring('Hello')) \
             .exec()
     
@@ -40,14 +40,14 @@ def test_has_substring_command_fail() -> None:
     assert result.failed_assertions[0].description() == 'test'
 
 def test_has_line_command() -> None:
-    result = Command('echo "Hello, World!"') \
+    result = Command('echo "Hello, World!" && echo "Goodbye, World!"') \
             .check_for(RuntimeLogCondition.HasLine('Hello, World!')) \
             .exec()
     
     assert result.passes()
 
 def test_has_line_command_fail() -> None:
-    result = Command('echo "Hello, World!"') \
+    result = Command('echo "Hello, World!" && echo "Test, World!"') \
             .check_for(RuntimeLogCondition.HasLine('Goodbye, World!', 'test_has_line_command_fail')) \
             .exec()
     
