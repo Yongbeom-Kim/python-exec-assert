@@ -1,13 +1,57 @@
-import asyncio
-import pytest
-
-pytest_plugins = ('pytest_asyncio',)
-
 from src.exec_assert import Command
+from src.exec_assert.condition import RuntimeLogCondition
 
-@pytest.mark.asyncio
-async def test_simple_commmand() -> None:
-    async with Command("echo 'Hello, World!'") as cmd:
-        await cmd.wait()
-        assert await cmd.read_stdout() == "Hello, World!\n"
-        assert await cmd.read_stderr() == ""
+def test_simple_commmand() -> None:
+    result = Command('echo "Hello, World!"') \
+            .exec()
+
+    assert result.passes()
+
+def test_custom_condition() -> None:
+    result = Command('echo "Hello, World!"') \
+            .check_for(RuntimeLogCondition.LambdaCondition(lambda line: 'Hello' in line)) \
+            .exec()
+    
+    assert result.passes()
+
+def test_custom_condition_fail() -> None:
+    result = Command('echo "Hello, World!"') \
+            .check_for(RuntimeLogCondition.LambdaCondition(lambda line: 'Goodbye' in line, 'test')) \
+            .exec()
+    
+    assert not result.passes()
+    assert len(result.failed_assertions) == 1
+    assert result.failed_assertions[0].description() == 'test'
+
+def test_has_substring_command() -> None:
+    result = Command('echo "Hello, World!"') \
+            .check_for(RuntimeLogCondition.HasSubstring('Hello')) \
+            .exec()
+    
+    assert result.passes()
+
+def test_has_substring_command_fail() -> None:
+    result = Command('echo "Hello, World!"') \
+            .check_for(RuntimeLogCondition.HasSubstring('Goodbye', 'test')) \
+            .exec()
+    
+    assert not result.passes()
+    assert len(result.failed_assertions) == 1
+    assert result.failed_assertions[0].description() == 'test'
+
+def test_has_line_command() -> None:
+    result = Command('echo "Hello, World!"') \
+            .check_for(RuntimeLogCondition.HasLine('Hello, World!')) \
+            .exec()
+    
+    assert result.passes()
+
+def test_has_line_command_fail() -> None:
+    result = Command('echo "Hello, World!"') \
+            .check_for(RuntimeLogCondition.HasLine('Goodbye, World!', 'test_has_line_command_fail')) \
+            .exec()
+    
+    assert not result.passes()
+    assert len(result.failed_assertions) == 1
+    assert result.failed_assertions[0].description() == 'test_has_line_command_fail'
+
